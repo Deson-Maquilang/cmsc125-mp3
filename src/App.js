@@ -8,7 +8,7 @@ function App() {
   document.body.style = 'background: #ffffff;';
   document.title = 'Maquilang, Deson | MP3';
 
-  //STATES
+  //CONST STATES
   const [start, setStart] = useState(false);
   const [simulationType, setSimulationType] = useState("");
   const [jobListData, setJobListData] = useState(jobListSimulation)
