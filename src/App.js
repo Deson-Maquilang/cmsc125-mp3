@@ -1,16 +1,12 @@
 import React, {useState} from 'react';
-import Table from './components/Table/Table';
+import Table from './Table';
 import './App.css';
 import { jobList, memoryList, jobListSimulation, memoryListSimulation } from './Lists';
 
-//images
-import resourceIcon from './images/resource.png';
-
-
 function App() {
 
-  document.body.style = 'background: #2C2C2C;';
-  document.title = 'Chiu, Gwyneth | MP3';
+  document.body.style = 'background: #ffffff;';
+  document.title = 'Maquilang, Deson | MP3';
 
   //STATES
   const [start, setStart] = useState(false);
@@ -21,7 +17,7 @@ function App() {
   const [queueTime, setQueueTime] = useState(0);
   const [internalFragementation, setInternalFragmentation] = useState(0);
   const [storageUtilization , setStorageUtilization] = useState(0);
-  const [avgWaitingTime, setAverageWaitingTime] = useState(0);
+  const [averageWaitingTime, setAverageWaitingTime] = useState(0);
   const [notUsed, setNotUsed] = useState(0)
   const [heavilyUsed, setHeavilyUsed] = useState(0)
   const [showButton, setShowButtons] = useState(true);
@@ -55,7 +51,7 @@ function App() {
       for(var j = 0; j < tempMemoryList.length; j++) {
         if((tempMemoryList[j]['size']>= tempJobList[i]['jobSize']) && tempMemoryList[j]['status'] === "FREE" && tempJobList[i]['status'] === "STANDBY") {
           tempJobList[i]['time'] -= 1; //start decrement
-          tempMemoryList[j]['status'] = "Occupied by job stream #" + tempJobList[i]['jobStream'];
+          tempMemoryList[j]['status'] = "OCCUPIED BY JOB STREAM NO. " + tempJobList[i]['jobStream'];
           tempJobList[i]['utilizedSpace'] = ((tempJobList[i]['jobSize']/ tempMemoryList[j]['size']) * 100).toFixed(2) + "%";
           fragmentation += tempMemoryList[j]['size'] - tempJobList[i]['jobSize'];
           tempMemoryList[j]['occupiedBy'] = i;
@@ -162,70 +158,64 @@ function App() {
 
   return (
     <div className="App">
-      <h1 className="text-start header">
-        <img src={resourceIcon} className="page-icon"/>
-        Memory Management - Chiu, Gwyneth W.
-      </h1>
-      <div className='row'>
-      <h2 className='dataset-header'>THE DATASET</h2>
-        <div className='col'>
-        <Table
-            type={"Memory Block"}
-            tableData={memoryList}
-            headingColumns={["Memory Block","Size"]}
-            rowsPerPage={10}
-        />
-        </div>
-        <div className='col'>
-        <Table
-            type={"Job Stream"}
-            tableData={jobList}
-            headingColumns={["Job Stream","Time","Job Size"]}
-            rowsPerPage={10}
-        />
-        </div>
-      </div>
       {showButton && (
         <div className='row'>
-          <h2 className='dataset-header'>RUN SIMULATION:  
-            <button className='run-btn' onClick={() => handleStart("first-fit")}>First-Fit</button>
-            <button className='run-btn worst-fit' onClick={() => handleStart("worst-fit")}>Worst-Fit</button>
-            <button className='run-btn best-fit' onClick={() => handleStart("best-fit")}>Best-Fit</button>
+          <h2 className='dataset-header'>Select partioning method to run:  
+            <button className='run-btn' onClick={() => handleStart("first-fit")}>FIRST-FIT</button>
+            <button className='run-btn worst-fit' onClick={() => handleStart("worst-fit")}>WORST-FIT</button>
+            <button className='run-btn best-fit' onClick={() => handleStart("best-fit")}>BEST-FIT</button>
           </h2>
         </div>
       )}
       {!showButton && (
         <div className='row'>
-          <button className='close-btn' onClick={() => window.location.reload()}>Close</button>
+          <button className='close-btn' onClick={() => window.location.reload()}>CLOSE</button>
         </div>
       )}
-      <div className='row'>
-      <h3 className='simulation-header'> {simulationType}  </h3>
+            <h3 className='simulation-header'> {simulationType}  </h3>
         <Table
-            type={"Evaluation"}
-            tableData={[{throughPut: throughPutVal, storageUtil: storageUtilization, partitionsNotUsed: notUsed + "%", partitionsHeavilyUsed: heavilyUsed + "%", waitingQueue: queueTime, waitingInQueue: avgWaitingTime, fragmentation: internalFragementation + " bytes"}]}
-            headingColumns={["Throughput", "Storage Utilization", "% Part. Not Used", "% Part. Heavily Used (>= 40%)" , "Waiting Queue Length", "Waiting Time in Queue", "Total Internal Fragmentation"]}
+            type={"Summary Performance of the System"}
+            tableData={[{throughPut: throughPutVal, storageUtil: storageUtilization, partitionsNotUsed: notUsed + "%", partitionsHeavilyUsed: heavilyUsed + "%", waitingQueue: queueTime, waitingInQueue: averageWaitingTime, fragmentation: internalFragementation + " bytes"}]}
+            headingColumns={["THROUGHPUT", "STORAGE UTILIZATION", "PARTITION NOT USED", "PARTITION HEAVILY USED" , "WAITING QUEUE LENGTH", "WAITING TIME IN QUEUE", "TOTAL INTERNAL FRAGMENTATION"]}
             rowsPerPage={10}
-        />
-      </div>
-      <div className='row'>
-        <div className='col'>
-        <Table
-            type={"Memory Block"}
-            tableData={memoryListSimulation}
-            headingColumns={["Memory Block", "Status" , "# of jobs handled" , "Last Occupied By" ,"Size"]}
-            rowsPerPage={10}
-        />
+      />
+        <div className='row'>
+            <div className='col-6'>
+              <Table
+                  type={"Data Set: Memory List"}
+                  tableData={memoryList}
+                  headingColumns={["MEMORY BLOCK","SIZE"]}
+              />
+
+              <Table
+                  type={"Data Set: Job List"}
+                  tableData={jobList}
+                  headingColumns={["JOB STREAM","TIME","JOB SIZE"]}
+              />
+            </div>
+
+          <div className='col-6'>
+            <Table
+                type={"Simulated: Memory List"}
+                tableData={memoryListSimulation}
+                headingColumns={["MEMORY BLOCK", "STATUS" , "NO. OF JOBS HANDLED" , "LAST OCCUPIED BY" ,"SIZE"]}
+            />
+            <Table
+                type={"Simulated: Job List"}
+                tableData={jobListSimulation}
+                headingColumns={["JOB STREAM", "STATUS", "WAITING TIME", "TIME", "UTILIZED SPACE", "JOB SIZE"]}
+            />
+          </div>
         </div>
-        <div className='col'>
-        <Table
-            type={"Job Stream"}
-            tableData={jobListSimulation}
-            headingColumns={["Job Stream", "Status", "Waiting Time", "Time", "Utilized Space", "Job Size"]}
-            rowsPerPage={10}
-        />
-        </div>
-      </div>
+        <h1 className="text-end">
+        MACHINE PROBLEM 3
+      </h1>
+      <h1 className="text-end">
+        ON MEMORY MANAGEMENT AND ALLOCATION STRATEGIES
+      </h1>
+      <h1 className="text-end">
+        DESON G. MAQUILANG
+      </h1>
     </div>
   );
 }
